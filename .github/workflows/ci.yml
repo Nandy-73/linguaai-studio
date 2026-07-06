@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt pytest ruff
+      - name: Lint
+        run: ruff check backend/app ai-services/worker
+      - name: Compile check
+        run: python -m compileall -q backend/app ai-services/worker
+      - name: Tests
+        run: cd backend && python -m pytest tests -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        working-directory: frontend
+        run: npm install
+      - name: Typecheck
+        working-directory: frontend
+        run: npx tsc --noEmit
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose file
+        run: cp .env.example .env && docker compose config -q
+      - name: Build backend image
+        run: docker build -f docker/backend.Dockerfile .
+      - name: Build worker image
+        run: docker build -f docker/worker.Dockerfile .

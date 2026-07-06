@@ -1,0 +1,25 @@
+# GPU / ML dependencies — install on GPU worker images only.
+# The worker runs in mock mode for any stage whose models are missing.
+
+# ASR + alignment
+whisperx>=3.1
+faster-whisper>=1.0
+
+# Diarization (requires HF_TOKEN with gated model access)
+pyannote.audio>=3.1
+
+# Translation
+transformers>=4.44
+ctranslate2>=4.0
+sentencepiece
+
+# TTS engines (pick per deployment; licenses differ — see docs/ARCHITECTURE.md §7)
+# coqui-tts          # XTTS-v2 — Coqui CPML, non-commercial
+# cosyvoice          # Apache-2.0
+# fish-speech        # check license
+# openvoice          # MIT
+
+# Audio
+demucs>=4.0
+librosa
+soundfile

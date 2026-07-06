@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── LinguaAI Studio design tokens — "The Light Desk" ─────────────────────────
+   Light: warm paper + ink + saffron accent (marketing, dashboard).
+   Dark:  deep warm charcoal (studios default, or user preference).           */
+
+:root {
+  --background: 40 30% 97%;        /* warm paper */
+  --foreground: 24 12% 9%;         /* warm ink */
+  --card: 0 0% 100%;
+  --card-foreground: 24 12% 9%;
+  --muted: 40 18% 92%;
+  --muted-foreground: 24 6% 42%;
+  --border: 36 14% 86%;
+  --accent: 28 86% 52%;            /* saffron */
+  --accent-foreground: 0 0% 100%;
+  --success: 152 45% 38%;
+  --warning: 40 90% 45%;
+  --destructive: 6 72% 48%;
+}
+
+.dark {
+  --background: 24 10% 7%;
+  --foreground: 40 20% 92%;
+  --card: 24 9% 10%;
+  --card-foreground: 40 20% 92%;
+  --muted: 24 8% 14%;
+  --muted-foreground: 30 8% 58%;
+  --border: 24 8% 18%;
+  --accent: 28 88% 56%;
+  --accent-foreground: 20 20% 8%;
+  --success: 152 40% 46%;
+  --warning: 40 85% 55%;
+  --destructive: 6 70% 55%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glass surface — used sparingly on marketing overlays */
+.glass {
+  background: hsl(var(--card) / 0.65);
+  backdrop-filter: blur(14px);
+  border: 1px solid hsl(var(--border) / 0.6);
+}
+
+/* Thin scrollbars in studios */
+.studio-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.studio-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}

@@ -1,0 +1,128 @@
+{
+  "languages": [
+    {"code": "en", "name": "English"}, {"code": "fr", "name": "French"}, {"code": "de", "name": "German"},
+    {"code": "it", "name": "Italian"}, {"code": "es", "name": "Spanish"}, {"code": "pt", "name": "Portuguese"},
+    {"code": "ta", "name": "Tamil"}, {"code": "te", "name": "Telugu"}, {"code": "ml", "name": "Malayalam"},
+    {"code": "kn", "name": "Kannada"}, {"code": "hi", "name": "Hindi"}, {"code": "ar", "name": "Arabic"},
+    {"code": "ja", "name": "Japanese"}, {"code": "ko", "name": "Korean"}, {"code": "zh", "name": "Chinese"},
+    {"code": "nl", "name": "Dutch"}, {"code": "sv", "name": "Swedish"}, {"code": "no", "name": "Norwegian"},
+    {"code": "da", "name": "Danish"}, {"code": "fi", "name": "Finnish"}, {"code": "is", "name": "Icelandic"},
+    {"code": "pl", "name": "Polish"}, {"code": "cs", "name": "Czech"}, {"code": "sk", "name": "Slovak"},
+    {"code": "hu", "name": "Hungarian"}, {"code": "ro", "name": "Romanian"}, {"code": "bg", "name": "Bulgarian"},
+    {"code": "el", "name": "Greek"}, {"code": "tr", "name": "Turkish"}, {"code": "ru", "name": "Russian"},
+    {"code": "uk", "name": "Ukrainian"}, {"code": "be", "name": "Belarusian"}, {"code": "sr", "name": "Serbian"},
+    {"code": "hr", "name": "Croatian"}, {"code": "bs", "name": "Bosnian"}, {"code": "sl", "name": "Slovenian"},
+    {"code": "mk", "name": "Macedonian"}, {"code": "sq", "name": "Albanian"}, {"code": "lt", "name": "Lithuanian"},
+    {"code": "lv", "name": "Latvian"}, {"code": "et", "name": "Estonian"}, {"code": "mt", "name": "Maltese"},
+    {"code": "ga", "name": "Irish"}, {"code": "cy", "name": "Welsh"}, {"code": "eu", "name": "Basque"},
+    {"code": "ca", "name": "Catalan"}, {"code": "gl", "name": "Galician"}, {"code": "he", "name": "Hebrew"},
+    {"code": "fa", "name": "Persian"}, {"code": "ur", "name": "Urdu"}, {"code": "ps", "name": "Pashto"},
+    {"code": "ku", "name": "Kurdish"}, {"code": "hy", "name": "Armenian"}, {"code": "ka", "name": "Georgian"},
+    {"code": "az", "name": "Azerbaijani"}, {"code": "kk", "name": "Kazakh"}, {"code": "ky", "name": "Kyrgyz"},
+    {"code": "uz", "name": "Uzbek"}, {"code": "tk", "name": "Turkmen"}, {"code": "tg", "name": "Tajik"},
+    {"code": "mn", "name": "Mongolian"}, {"code": "bn", "name": "Bengali"}, {"code": "pa", "name": "Punjabi"},
+    {"code": "gu", "name": "Gujarati"}, {"code": "mr", "name": "Marathi"}, {"code": "or", "name": "Odia"},
+    {"code": "as", "name": "Assamese"}, {"code": "ne", "name": "Nepali"}, {"code": "si", "name": "Sinhala"},
+    {"code": "my", "name": "Burmese"}, {"code": "km", "name": "Khmer"}, {"code": "lo", "name": "Lao"},
+    {"code": "th", "name": "Thai"}, {"code": "vi", "name": "Vietnamese"}, {"code": "id", "name": "Indonesian"},
+    {"code": "ms", "name": "Malay"}, {"code": "tl", "name": "Filipino"}, {"code": "jv", "name": "Javanese"},
+    {"code": "su", "name": "Sundanese"}, {"code": "ceb", "name": "Cebuano"}, {"code": "sw", "name": "Swahili"},
+    {"code": "am", "name": "Amharic"}, {"code": "ha", "name": "Hausa"}, {"code": "yo", "name": "Yoruba"},
+    {"code": "ig", "name": "Igbo"}, {"code": "zu", "name": "Zulu"}, {"code": "xh", "name": "Xhosa"},
+    {"code": "af", "name": "Afrikaans"}, {"code": "st", "name": "Sesotho"}, {"code": "sn", "name": "Shona"},
+    {"code": "ny", "name": "Chichewa"}, {"code": "mg", "name": "Malagasy"}, {"code": "so", "name": "Somali"},
+    {"code": "om", "name": "Oromo"}, {"code": "ti", "name": "Tigrinya"}, {"code": "rw", "name": "Kinyarwanda"},
+    {"code": "ln", "name": "Lingala"}, {"code": "wo", "name": "Wolof"}, {"code": "ht", "name": "Haitian Creole"},
+    {"code": "lb", "name": "Luxembourgish"}, {"code": "fo", "name": "Faroese"}, {"code": "mi", "name": "Māori"},
+    {"code": "sm", "name": "Samoan"}, {"code": "to", "name": "Tongan"}, {"code": "fj", "name": "Fijian"},
+    {"code": "haw", "name": "Hawaiian"}, {"code": "lg", "name": "Luganda"}, {"code": "ak", "name": "Akan"},
+    {"code": "bm", "name": "Bambara"}, {"code": "ff", "name": "Fula"}, {"code": "sd", "name": "Sindhi"},
+    {"code": "dv", "name": "Dhivehi"}, {"code": "bo", "name": "Tibetan"}, {"code": "ug", "name": "Uyghur"},
+    {"code": "yue", "name": "Cantonese"}, {"code": "eo", "name": "Esperanto"}, {"code": "la", "name": "Latin"}
+  ],
+  "styles": {
+    "en": [
+      {"id": "formal", "name": "Formal", "axes": {"register": "formal"}},
+      {"id": "business", "name": "Business", "axes": {"register": "formal", "domain": "business"}},
+      {"id": "academic", "name": "Academic", "axes": {"register": "formal", "domain": "academic"}},
+      {"id": "plain", "name": "Plain English", "axes": {"simplification": "plain"}},
+      {"id": "conversational", "name": "Conversational", "axes": {"register": "casual", "modality": "spoken"}, "default": true},
+      {"id": "easy", "name": "Easy English", "axes": {"simplification": "easy"}}
+    ],
+    "fr": [
+      {"id": "formal", "name": "Formal (vous)", "axes": {"register": "formal"}},
+      {"id": "conversational", "name": "Conversational (tu)", "axes": {"register": "casual", "modality": "spoken"}, "default": true},
+      {"id": "swiss", "name": "Swiss French", "axes": {"region": "fr-CH"}},
+      {"id": "canadian", "name": "Canadian French", "axes": {"region": "fr-CA"}}
+    ],
+    "de": [
+      {"id": "formal", "name": "Formal (Sie)", "axes": {"register": "formal"}, "default": true},
+      {"id": "informal", "name": "Informal (du)", "axes": {"register": "casual"}},
+      {"id": "swiss", "name": "Swiss German", "axes": {"region": "de-CH", "modality": "spoken"}, "experimental": true},
+      {"id": "austrian", "name": "Austrian German", "axes": {"region": "de-AT"}}
+    ],
+    "it": [
+      {"id": "standard", "name": "Standard", "axes": {}, "default": true},
+      {"id": "conversational", "name": "Conversational", "axes": {"register": "casual", "modality": "spoken"}},
+      {"id": "everyday", "name": "Everyday Italian", "axes": {"register": "casual", "simplification": "plain"}}
+    ],
+    "es": [
+      {"id": "spain", "name": "Spain (Castilian)", "axes": {"region": "es-ES"}},
+      {"id": "latam", "name": "Latin America", "axes": {"region": "es-419"}, "default": true},
+      {"id": "formal", "name": "Formal (usted)", "axes": {"register": "formal"}},
+      {"id": "informal", "name": "Informal (tú)", "axes": {"register": "casual"}}
+    ],
+    "pt": [
+      {"id": "brazil", "name": "Brazil", "axes": {"region": "pt-BR"}, "default": true},
+      {"id": "portugal", "name": "Portugal", "axes": {"region": "pt-PT"}}
+    ],
+    "ta": [
+      {"id": "literary", "name": "Literary (செந்தமிழ்)", "axes": {"era": "literary", "register": "formal"}},
+      {"id": "formal", "name": "Formal", "axes": {"register": "formal"}},
+      {"id": "spoken", "name": "Spoken (பேச்சுத் தமிழ்)", "axes": {"register": "casual", "modality": "spoken"}, "default": true},
+      {"id": "simple", "name": "Simple", "axes": {"simplification": "easy"}},
+      {"id": "tanglish", "name": "Tanglish", "axes": {"script": "Latn", "codemix": 2, "register": "casual"}, "experimental": true}
+    ],
+    "te": [
+      {"id": "literary", "name": "Literary", "axes": {"era": "literary"}},
+      {"id": "standard", "name": "Standard", "axes": {}, "default": true},
+      {"id": "spoken", "name": "Spoken", "axes": {"register": "casual", "modality": "spoken"}},
+      {"id": "simple", "name": "Simple", "axes": {"simplification": "easy"}}
+    ],
+    "ml": [
+      {"id": "literary", "name": "Literary", "axes": {"era": "literary"}},
+      {"id": "spoken", "name": "Spoken", "axes": {"register": "casual", "modality": "spoken"}, "default": true}
+    ],
+    "kn": [
+      {"id": "literary", "name": "Literary", "axes": {"era": "literary"}},
+      {"id": "spoken", "name": "Spoken", "axes": {"register": "casual", "modality": "spoken"}, "default": true}
+    ],
+    "hi": [
+      {"id": "formal", "name": "Formal (आप)", "axes": {"register": "formal", "honorific": "aap"}},
+      {"id": "spoken", "name": "Spoken", "axes": {"register": "casual", "modality": "spoken"}, "default": true},
+      {"id": "hinglish", "name": "Hinglish", "axes": {"script": "Latn", "codemix": 2, "register": "casual"}, "experimental": true}
+    ],
+    "ar": [
+      {"id": "msa", "name": "Modern Standard", "axes": {"region": "ar-MSA"}, "default": true},
+      {"id": "egyptian", "name": "Egyptian", "axes": {"region": "ar-EG", "modality": "spoken"}},
+      {"id": "levantine", "name": "Levantine", "axes": {"region": "ar-Levant", "modality": "spoken"}},
+      {"id": "gulf", "name": "Gulf", "axes": {"region": "ar-Gulf", "modality": "spoken"}}
+    ],
+    "ja": [
+      {"id": "keigo", "name": "Keigo (敬語)", "axes": {"honorific": "keigo", "register": "formal"}},
+      {"id": "formal", "name": "Formal (です/ます)", "axes": {"register": "formal", "honorific": "teineigo"}, "default": true},
+      {"id": "casual", "name": "Casual", "axes": {"register": "casual", "honorific": "plain"}}
+    ],
+    "ko": [
+      {"id": "honorific", "name": "Honorific (합쇼체)", "axes": {"honorific": "hapsyoche", "register": "formal"}},
+      {"id": "formal", "name": "Formal (해요체)", "axes": {"honorific": "haeyoche"}, "default": true},
+      {"id": "informal", "name": "Informal (해체)", "axes": {"honorific": "haeche", "register": "casual"}}
+    ],
+    "zh": [
+      {"id": "simplified", "name": "Simplified (简体)", "axes": {"script": "Hans"}, "default": true},
+      {"id": "traditional", "name": "Traditional (繁體)", "axes": {"script": "Hant"}},
+      {"id": "written", "name": "Written (书面语)", "axes": {"modality": "written", "register": "formal"}},
+      {"id": "spoken", "name": "Spoken (口语)", "axes": {"modality": "spoken", "register": "casual"}}
+    ]
+  }
+}
