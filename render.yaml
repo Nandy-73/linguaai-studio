@@ -1,0 +1,98 @@
+# Render Blueprint — deploys the whole app on Render's free tier.
+# Reference: https://render.com/docs/blueprint-spec
+#
+# Fields marked `sync: false` are prompted for once in the Render dashboard
+# when you create this Blueprint — fill them in with the values from Neon /
+# Upstash / MongoDB Atlas / Cloudflare R2.
+
+services:
+  - type: web
+    name: linguaai-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: docker/backend.Dockerfile
+    dockerContext: .
+    dockerCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 10000"
+    healthCheckPath: /healthz
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: INTERNAL_TOKEN
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_SYNC
+        sync: false
+      - key: MONGO_URL
+        sync: false
+      - key: MONGO_DB
+        value: lingua
+      - key: REDIS_URL
+        sync: false
+      - key: S3_ENDPOINT_URL
+        sync: false
+      - key: S3_PUBLIC_ENDPOINT_URL
+        sync: false
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_REGION
+        value: auto
+      - key: LLM_BASE_URL
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+
+  - type: web
+    name: linguaai-worker
+    runtime: docker
+    plan: free
+    dockerfilePath: docker/worker.Dockerfile
+    dockerContext: .
+    dockerCommand: sh -c "python -m worker.healthcheck & celery -A worker.celery_app worker --loglevel=info -Q q.media,q.asr,q.mt,q.tts --concurrency=2"
+    envVars:
+      - key: BACKEND_URL
+        sync: false
+      - key: INTERNAL_TOKEN
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: MONGO_URL
+        sync: false
+      - key: MONGO_DB
+        value: lingua
+      - key: S3_ENDPOINT_URL
+        sync: false
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: AI_MOCK_MODE
+        value: auto
+      - key: LLM_BASE_URL
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+
+  - type: web
+    name: linguaai-frontend
+    runtime: docker
+    plan: free
+    dockerfilePath: docker/frontend.Dockerfile
+    dockerContext: .
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+      - key: NEXT_PUBLIC_WS_URL
+        sync: false
