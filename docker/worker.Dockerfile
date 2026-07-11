@@ -16,4 +16,4 @@ COPY ai-services/requirements-ml.txt .
 
 COPY ai-services/ .
 
-CMD ["celery", "-A", "worker.celery_app", "worker", "--loglevel=info"]
+CMD ["sh", "-c", "python -m worker.healthcheck & celery -A worker.celery_app worker --loglevel=info -Q q.media,q.asr,q.mt,q.tts --concurrency=2"]
