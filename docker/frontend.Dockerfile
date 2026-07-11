@@ -8,4 +8,4 @@ RUN npm install
 COPY frontend/ .
 
 EXPOSE 3000
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npx next dev --hostname 0.0.0.0 -p ${PORT:-3000}"]
