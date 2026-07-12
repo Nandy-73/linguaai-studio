@@ -2,13 +2,13 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { FileUp } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { FileUp, FolderPlus } from "lucide-react";
 import { api } from "@/lib/api";
 import type { LanguageInfo, Project, Run } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Label, Select } from "@/components/ui/input";
+import { Input, Label, Select } from "@/components/ui/input";
 import { useWorkspace } from "@/stores/workspace";
 
 const TEMPLATES = [
@@ -39,6 +39,9 @@ function UploadInner() {
   const [phase, setPhase] = useState<"idle" | "uploading" | "starting">("idle");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
+  const [newProjectName, setNewProjectName] = useState("");
+  const [creatingProject, setCreatingProject] = useState(false);
+  const qc = useQueryClient();
 
   const { data: projects } = useQuery({
     queryKey: ["projects", orgId],
@@ -116,12 +119,47 @@ function UploadInner() {
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
             <Label>Project</Label>
-            <Select value={projectId} onChange={(e) => setProjectId(e.target.value)}>
-              <option value="">Select a project…</option>
-              {(projects || []).map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </Select>
+            {projects && projects.length === 0 ? (
+              <div className="flex flex-wrap items-center gap-2 rounded-lg border border-accent/40 bg-accent/5 p-3">
+                <p className="w-full text-sm text-muted-foreground">
+                  You don&apos;t have a project yet — create one right here:
+                </p>
+                <Input
+                  className="min-w-40 flex-1"
+                  placeholder="My first project"
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                />
+                <Button
+                  disabled={creatingProject}
+                  onClick={async () => {
+                    setCreatingProject(true);
+                    try {
+                      const p = await api<Project>(`/orgs/${orgId}/projects`, {
+                        method: "POST",
+                        json: { name: newProjectName.trim() || "My first project" },
+                      });
+                      setProjectId(p.id);
+                      qc.invalidateQueries({ queryKey: ["projects", orgId] });
+                    } catch (err) {
+                      setError(err instanceof Error ? err.message : "Could not create project");
+                    } finally {
+                      setCreatingProject(false);
+                    }
+                  }}
+                >
+                  <FolderPlus className="h-4 w-4" />
+                  {creatingProject ? "Creating…" : "Create project"}
+                </Button>
+              </div>
+            ) : (
+              <Select value={projectId} onChange={(e) => setProjectId(e.target.value)}>
+                <option value="">Select a project…</option>
+                {(projects || []).map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </Select>
+            )}
           </div>
           {!assetId && (
             <label className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed p-8 text-center transition-colors hover:border-accent hover:bg-accent/5">
