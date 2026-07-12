@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3, Bell, Bot, CreditCard, Download, FolderKanban, History,
-  KeyRound, Languages, LayoutDashboard, Mic2, Settings, Shield,
+  KeyRound, Languages, LayoutDashboard, Mic2, Radio, Settings, Shield,
   SlidersHorizontal, UploadCloud, UserRound, Users, Building2, Drama,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ const groups: { label: string; items: { href: string; label: string; icon: React
   {
     label: "Studios",
     items: [
+      { href: "/live", label: "Live Translate", icon: Radio },
       { href: "/studios", label: "Translation Studios", icon: SlidersHorizontal },
       { href: "/voices", label: "Voice Studio", icon: Mic2 },
       { href: "/characters", label: "Characters", icon: Drama },

@@ -55,3 +55,36 @@ async def summarize_transcript(transcript_text: str, lang: str, kind: str = "sum
     }
     system = f"You are a precise content analyst. {prompts.get(kind, prompts['summary'])} Respond in language: {lang}."
     return await complete(system, f"TRANSCRIPT:\n{transcript_text[:24000]}")
+
+
+def _style_directive(style: dict, lang: str) -> str:
+    axes = style.get("axes", {})
+    parts = [f"Style: {style.get('name', 'Standard')}."]
+    if axes.get("register"):
+        parts.append(f"Register: {axes['register']}.")
+    if axes.get("honorific"):
+        parts.append(f"Honorific level: {axes['honorific']} — apply correct morphology consistently.")
+    if axes.get("region"):
+        parts.append(f"Regional variety: {axes['region']}.")
+    if axes.get("script"):
+        parts.append(f"Script: {axes['script']}.")
+    if axes.get("codemix"):
+        parts.append("Natural code-mixing with English is expected, "
+                     f"level {axes['codemix']}/3 (as native urban speakers talk).")
+    if axes.get("simplification"):
+        parts.append(f"Simplification: {axes['simplification']} — short sentences, common words only.")
+    if axes.get("modality") == "spoken":
+        parts.append("Spoken feel — natural rhythm, as if said aloud.")
+    return " ".join(parts)
+
+
+async def live_translate(text: str, target_lang: str, style: dict) -> str:
+    """Single-utterance, low-latency translation for the Live Captions page."""
+    if not is_live():
+        return f"[{target_lang}·{style.get('id', 'standard')}] {text}"
+    system = (
+        f"You are a live interpreter. Translate the user's utterance into {target_lang}. "
+        f"{_style_directive(style, target_lang)} "
+        "Translate idioms by meaning. Return ONLY the translation — no quotes, no notes."
+    )
+    return await complete(system, text, max_tokens=300)

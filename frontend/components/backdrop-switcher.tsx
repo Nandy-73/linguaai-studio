@@ -7,6 +7,7 @@ import { useEffect } from "react";
     (marketing pages etc.) falls back to the fjord set in globals.css. */
 const BACKDROPS: [prefix: string, image: string][] = [
   ["/dashboard", "snow-valley.jpg"],
+  ["/live", "aurora-night.jpg"],
   ["/projects", "misty-hills.jpg"],
   ["/upload", "waterfall.jpg"],
   ["/studios", "foggy-peak.jpg"],

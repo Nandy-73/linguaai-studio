@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1 import (
     admin, analytics, api_keys, auth, billing, chat, internal, languages,
-    media, notifications, orgs, projects, runs, users, voices, ws,
+    live, media, notifications, orgs, projects, runs, users, voices, ws,
 )
 
 api_router = APIRouter(prefix="/api/v1")
@@ -19,6 +19,7 @@ api_router.include_router(billing.router)
 api_router.include_router(analytics.router)
 api_router.include_router(notifications.router)
 api_router.include_router(chat.router)
+api_router.include_router(live.router)
 api_router.include_router(admin.router)
 api_router.include_router(internal.router)
 api_router.include_router(ws.router)
