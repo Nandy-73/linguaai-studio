@@ -205,6 +205,17 @@ function UploadInner() {
           : phase === "starting" ? "Starting pipeline…"
           : "Start localization"}
       </Button>
+      {(() => {
+        const missing: string[] = [];
+        if (!projectId) missing.push("pick a project (step 1)");
+        if (!file && !assetId) missing.push("choose a file (step 1)");
+        if (targets.length === 0) missing.push("select a target language");
+        return missing.length > 0 && phase === "idle" ? (
+          <p className="text-center text-sm text-warning">
+            To enable the button: {missing.join(" · ")}
+          </p>
+        ) : null;
+      })()}
     </div>
   );
 }
