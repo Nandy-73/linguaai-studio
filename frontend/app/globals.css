@@ -61,7 +61,7 @@ body::before {
       hsl(var(--background) / 0.70),
       hsl(var(--background) / 0.42) 45%,
       hsl(var(--background) / 0.62)),
-    url("/backgrounds/river-valley.jpg");
+    var(--page-bg, url("/backgrounds/river-valley.jpg"));
   background-size: cover;
   background-position: center;
   animation: bg-breathe 70s ease-in-out infinite alternate;
@@ -73,7 +73,7 @@ body::before {
       hsl(var(--background) / 0.84),
       hsl(var(--background) / 0.66) 45%,
       hsl(var(--background) / 0.80)),
-    url("/backgrounds/river-valley.jpg");
+    var(--page-bg, url("/backgrounds/river-valley.jpg"));
 }
 
 /* Very slow zoom — keeps the scene feeling alive without distracting */

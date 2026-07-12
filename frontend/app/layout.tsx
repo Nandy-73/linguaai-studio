@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { BackdropSwitcher } from "@/components/backdrop-switcher";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display" });
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${sans.variable} ${display.variable} ${mono.variable} font-sans`}>
+        <BackdropSwitcher />
         <Providers>{children}</Providers>
       </body>
     </html>
