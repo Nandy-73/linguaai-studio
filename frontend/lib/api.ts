@@ -42,6 +42,32 @@ export class ApiError extends Error {
   }
 }
 
+function isLocalOrigin(): boolean {
+  if (typeof window === "undefined") return false;
+  return ["localhost", "127.0.0.1"].includes(window.location.hostname);
+}
+
+function unreachableMessage(): string {
+  return isLocalOrigin()
+    ? "Cannot reach the LinguaAI backend. Is `docker compose up` running? (Use http://localhost:8080, not the frontend dev port.)"
+    : "Cannot reach the LinguaAI server right now. Free-tier servers sleep after 15 minutes idle and take up to a minute to wake up — please try again in a moment.";
+}
+
+async function fetchWithWakeupRetry(url: string, init: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init);
+  } catch (err) {
+    // A network-level failure (not an HTTP error) often means a sleeping
+    // free-tier instance was mid-wakeup — give it a moment and retry once.
+    await new Promise((r) => setTimeout(r, 4000));
+    try {
+      return await fetch(url, init);
+    } catch {
+      throw err;
+    }
+  }
+}
+
 export async function api<T = unknown>(
   path: string,
   options: RequestInit & { json?: unknown } = {},
@@ -57,17 +83,17 @@ export async function api<T = unknown>(
 
   let resp: Response;
   try {
-    resp = await fetch(`${API}${path}`, {
+    resp = await fetchWithWakeupRetry(`${API}${path}`, {
       ...init,
       headers,
       body: json !== undefined ? JSON.stringify(json) : init.body,
     });
   } catch {
-    throw new ApiError(0, "Cannot reach the LinguaAI backend. Is `docker compose up` running? (Use http://localhost:8080, not the frontend dev port.)");
+    throw new ApiError(0, unreachableMessage());
   }
   // Frontend dev server without a backend answers /api/* itself with an HTML 404
   if (resp.status === 404 && (resp.headers.get("content-type") || "").includes("text/html")) {
-    throw new ApiError(0, "The backend is not running behind this origin. Start the full stack with `docker compose up` and open http://localhost:8080.");
+    throw new ApiError(0, unreachableMessage());
   }
 
   if (resp.status === 401 && !retried && (await tryRefresh())) {
