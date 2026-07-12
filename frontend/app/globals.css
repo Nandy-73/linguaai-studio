@@ -46,6 +46,39 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Global rainbow aurora — fixed to the viewport so every page (landing,
+   auth, dashboard) floats on the same drifting iridescent field. Opaque
+   surfaces (dark studios) cover it automatically. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -12vh -12vw;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(36% 30% at 10% 8%, hsl(265 85% 66% / 0.30), transparent 64%),
+    radial-gradient(32% 28% at 50% 0%, hsl(215 90% 62% / 0.26), transparent 62%),
+    radial-gradient(30% 26% at 90% 12%, hsl(185 80% 55% / 0.26), transparent 60%),
+    radial-gradient(28% 24% at 78% 55%, hsl(140 70% 52% / 0.22), transparent 62%),
+    radial-gradient(34% 28% at 18% 60%, hsl(330 85% 66% / 0.24), transparent 64%),
+    radial-gradient(42% 34% at 45% 98%, hsl(40 95% 58% / 0.28), transparent 65%);
+  animation: liquid-drift 30s ease-in-out infinite alternate,
+             liquid-hue 46s linear infinite;
+  will-change: transform, filter;
+}
+.dark body::before {
+  background:
+    radial-gradient(36% 30% at 10% 8%, hsl(265 85% 62% / 0.22), transparent 64%),
+    radial-gradient(32% 28% at 50% 0%, hsl(215 90% 60% / 0.18), transparent 62%),
+    radial-gradient(30% 26% at 90% 12%, hsl(185 80% 52% / 0.18), transparent 60%),
+    radial-gradient(28% 24% at 78% 55%, hsl(140 70% 50% / 0.15), transparent 62%),
+    radial-gradient(34% 28% at 18% 60%, hsl(330 85% 62% / 0.17), transparent 64%),
+    radial-gradient(42% 34% at 45% 98%, hsl(40 95% 56% / 0.19), transparent 65%);
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
+}
+
 /* Glass surface — used sparingly on marketing overlays */
 .glass {
   background: hsl(var(--card) / 0.65);
@@ -125,37 +158,11 @@ body {
   }
 }
 
-/* Ambient liquid backdrop — oversized soft color blobs that drift slowly,
-   the motion cue that makes the glass read as liquid rather than static. */
+/* Legacy wrapper — the aurora now lives globally on body::before; this stays
+   as a plain positioned container for layouts that use it. */
 .spatial-field {
   position: relative;
   isolation: isolate;
-}
-.spatial-field::before {
-  content: "";
-  position: absolute;
-  inset: -12%;
-  z-index: -1;
-  background:
-    radial-gradient(36% 30% at 10% 8%, hsl(265 85% 66% / 0.30), transparent 64%),
-    radial-gradient(32% 28% at 50% 0%, hsl(215 90% 62% / 0.26), transparent 62%),
-    radial-gradient(30% 26% at 90% 12%, hsl(185 80% 55% / 0.26), transparent 60%),
-    radial-gradient(28% 24% at 78% 55%, hsl(140 70% 52% / 0.22), transparent 62%),
-    radial-gradient(34% 28% at 18% 60%, hsl(330 85% 66% / 0.24), transparent 64%),
-    radial-gradient(42% 34% at 45% 98%, hsl(40 95% 58% / 0.28), transparent 65%);
-  pointer-events: none;
-  animation: liquid-drift 30s ease-in-out infinite alternate,
-             liquid-hue 46s linear infinite;
-  will-change: transform, filter;
-}
-.dark .spatial-field::before {
-  background:
-    radial-gradient(36% 30% at 10% 8%, hsl(265 85% 62% / 0.22), transparent 64%),
-    radial-gradient(32% 28% at 50% 0%, hsl(215 90% 60% / 0.18), transparent 62%),
-    radial-gradient(30% 26% at 90% 12%, hsl(185 80% 52% / 0.18), transparent 60%),
-    radial-gradient(28% 24% at 78% 55%, hsl(140 70% 50% / 0.15), transparent 62%),
-    radial-gradient(34% 28% at 18% 60%, hsl(330 85% 62% / 0.17), transparent 64%),
-    radial-gradient(42% 34% at 45% 98%, hsl(40 95% 56% / 0.19), transparent 65%);
 }
 
 @keyframes liquid-drift {
