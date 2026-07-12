@@ -46,35 +46,42 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Global rainbow aurora — fixed to the viewport so every page (landing,
-   auth, dashboard) floats on the same drifting iridescent field. Opaque
-   surfaces (dark studios) cover it automatically. */
+/* Global nature backdrop — a fixed full-viewport photo under every page,
+   softened by a theme-tinted wash so content stays readable; the frosted
+   panels blur it into the liquid-glass look. Swap the photo by changing
+   the url (options live in /public/backgrounds/). */
 body::before {
   content: "";
   position: fixed;
-  inset: -12vh -12vw;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(36% 30% at 10% 8%, hsl(265 85% 66% / 0.30), transparent 64%),
-    radial-gradient(32% 28% at 50% 0%, hsl(215 90% 62% / 0.26), transparent 62%),
-    radial-gradient(30% 26% at 90% 12%, hsl(185 80% 55% / 0.26), transparent 60%),
-    radial-gradient(28% 24% at 78% 55%, hsl(140 70% 52% / 0.22), transparent 62%),
-    radial-gradient(34% 28% at 18% 60%, hsl(330 85% 66% / 0.24), transparent 64%),
-    radial-gradient(42% 34% at 45% 98%, hsl(40 95% 58% / 0.28), transparent 65%);
-  animation: liquid-drift 30s ease-in-out infinite alternate,
-             liquid-hue 46s linear infinite;
-  will-change: transform, filter;
+  background-image:
+    linear-gradient(180deg,
+      hsl(var(--background) / 0.70),
+      hsl(var(--background) / 0.42) 45%,
+      hsl(var(--background) / 0.62)),
+    url("/backgrounds/river-valley.jpg");
+  background-size: cover;
+  background-position: center;
+  animation: bg-breathe 70s ease-in-out infinite alternate;
+  will-change: transform;
 }
 .dark body::before {
-  background:
-    radial-gradient(36% 30% at 10% 8%, hsl(265 85% 62% / 0.22), transparent 64%),
-    radial-gradient(32% 28% at 50% 0%, hsl(215 90% 60% / 0.18), transparent 62%),
-    radial-gradient(30% 26% at 90% 12%, hsl(185 80% 52% / 0.18), transparent 60%),
-    radial-gradient(28% 24% at 78% 55%, hsl(140 70% 50% / 0.15), transparent 62%),
-    radial-gradient(34% 28% at 18% 60%, hsl(330 85% 62% / 0.17), transparent 64%),
-    radial-gradient(42% 34% at 45% 98%, hsl(40 95% 56% / 0.19), transparent 65%);
+  background-image:
+    linear-gradient(180deg,
+      hsl(var(--background) / 0.84),
+      hsl(var(--background) / 0.66) 45%,
+      hsl(var(--background) / 0.80)),
+    url("/backgrounds/river-valley.jpg");
 }
+
+/* Very slow zoom — keeps the scene feeling alive without distracting */
+@keyframes bg-breathe {
+  from { transform: scale(1); }
+  to   { transform: scale(1.07); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body::before { animation: none; }
 }
