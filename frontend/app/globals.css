@@ -137,26 +137,38 @@ body {
   inset: -12%;
   z-index: -1;
   background:
-    radial-gradient(38% 32% at 12% 6%, hsl(var(--accent) / 0.34), transparent 65%),
-    radial-gradient(34% 28% at 86% 14%, hsl(var(--success) / 0.24), transparent 60%),
-    radial-gradient(30% 26% at 70% 55%, hsl(28 90% 60% / 0.18), transparent 62%),
-    radial-gradient(44% 36% at 30% 92%, hsl(var(--accent) / 0.26), transparent 65%);
+    radial-gradient(36% 30% at 10% 8%, hsl(265 85% 66% / 0.30), transparent 64%),
+    radial-gradient(32% 28% at 50% 0%, hsl(215 90% 62% / 0.26), transparent 62%),
+    radial-gradient(30% 26% at 90% 12%, hsl(185 80% 55% / 0.26), transparent 60%),
+    radial-gradient(28% 24% at 78% 55%, hsl(140 70% 52% / 0.22), transparent 62%),
+    radial-gradient(34% 28% at 18% 60%, hsl(330 85% 66% / 0.24), transparent 64%),
+    radial-gradient(42% 34% at 45% 98%, hsl(40 95% 58% / 0.28), transparent 65%);
   pointer-events: none;
-  animation: liquid-drift 28s ease-in-out infinite alternate;
-  will-change: transform;
+  animation: liquid-drift 30s ease-in-out infinite alternate,
+             liquid-hue 46s linear infinite;
+  will-change: transform, filter;
 }
 .dark .spatial-field::before {
   background:
-    radial-gradient(38% 32% at 12% 6%, hsl(var(--accent) / 0.22), transparent 65%),
-    radial-gradient(34% 28% at 86% 14%, hsl(var(--success) / 0.14), transparent 60%),
-    radial-gradient(30% 26% at 70% 55%, hsl(28 90% 60% / 0.12), transparent 62%),
-    radial-gradient(44% 36% at 30% 92%, hsl(var(--accent) / 0.16), transparent 65%);
+    radial-gradient(36% 30% at 10% 8%, hsl(265 85% 62% / 0.22), transparent 64%),
+    radial-gradient(32% 28% at 50% 0%, hsl(215 90% 60% / 0.18), transparent 62%),
+    radial-gradient(30% 26% at 90% 12%, hsl(185 80% 52% / 0.18), transparent 60%),
+    radial-gradient(28% 24% at 78% 55%, hsl(140 70% 50% / 0.15), transparent 62%),
+    radial-gradient(34% 28% at 18% 60%, hsl(330 85% 62% / 0.17), transparent 64%),
+    radial-gradient(42% 34% at 45% 98%, hsl(40 95% 56% / 0.19), transparent 65%);
 }
 
 @keyframes liquid-drift {
   from { transform: translate3d(-2%, -1.5%, 0) scale(1) rotate(0.001deg); }
   50%  { transform: translate3d(1%, 1%, 0) scale(1.06); }
   to   { transform: translate3d(2.5%, -1%, 0) scale(1.02); }
+}
+
+/* Slow hue cycle — the blobs melt through the spectrum for an iridescent,
+   soap-bubble feel behind the glass. */
+@keyframes liquid-hue {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
