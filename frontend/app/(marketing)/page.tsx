@@ -4,8 +4,10 @@ import {
   MonitorPlay, Sparkles, Users,
 } from "lucide-react";
 import { HeroRibbon } from "@/components/marketing/hero-ribbon";
+import { ParallaxLayer } from "@/components/spatial/parallax-layer";
+import { TiltCard } from "@/components/spatial/tilt-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const capabilities = [
   { icon: MonitorPlay, title: "Video Translation", body: "Upload any video, receive subtitles or a fully dubbed version — voices, timing and emotion preserved." },
@@ -24,7 +26,11 @@ export default function LandingPage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden px-4 pb-20 pt-24">
-        <div className="mx-auto max-w-4xl text-center">
+        <ParallaxLayer speed={0.15} className="left-[8%] top-10 h-40 w-40 rounded-full bg-accent/20 blur-3xl animate-float" />
+        <ParallaxLayer speed={0.3} className="right-[10%] top-32 h-56 w-56 rounded-full bg-success/15 blur-3xl animate-float" />
+        <ParallaxLayer speed={0.08} className="left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-accent/10 blur-3xl" />
+
+        <div className="relative mx-auto max-w-4xl text-center">
           <p className="mb-4 inline-block rounded-full border px-3 py-1 text-xs text-muted-foreground">
             The AI multimedia localization platform
           </p>
@@ -42,13 +48,13 @@ export default function LandingPage() {
             <Link href="/features"><Button size="lg" variant="outline">See how it works</Button></Link>
           </div>
         </div>
-        <div className="mt-16 px-2">
+        <div className="relative mt-16 px-2">
           <HeroRibbon />
         </div>
       </section>
 
       {/* Capabilities */}
-      <section className="border-t bg-muted/40 px-4 py-20">
+      <section className="border-t px-4 py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-display text-3xl font-semibold">
             One platform. Every localization job.
@@ -56,9 +62,9 @@ export default function LandingPage() {
           <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">
             Built as a pipeline, not a toy: every stage inspectable, every output reviewable.
           </p>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {capabilities.map(({ icon: Icon, title, body }) => (
-              <Card key={title} className="animate-fade-up">
+              <TiltCard key={title} depth={1} className="animate-fade-up">
                 <CardHeader>
                   <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-accent/15 text-accent">
                     <Icon className="h-5 w-5" />
@@ -66,7 +72,7 @@ export default function LandingPage() {
                   <CardTitle>{title}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">{body}</CardContent>
-              </Card>
+              </TiltCard>
             ))}
           </div>
         </div>

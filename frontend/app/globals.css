@@ -59,3 +59,132 @@ body {
   background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 4px;
 }
+
+/* ── Liquid Glass UI system ────────────────────────────────────────────────
+   Frosted, luminous panels with specular top rims, floating over a slowly
+   drifting ambient color field. visionOS-inspired, kept inside the warm
+   Light Desk palette. Every surface = glass tier (1–3) + elevation (1–3). */
+
+@layer utilities {
+  /* Elevation: soft drop shadow + the inset top rim that sells "glass edge" */
+  .elevate-1 {
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.40),
+      0 1px 2px hsl(var(--foreground) / 0.04),
+      0 4px 16px -4px hsl(var(--foreground) / 0.08);
+  }
+  .elevate-2 {
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.45),
+      0 2px 6px hsl(var(--foreground) / 0.06),
+      0 16px 32px -12px hsl(var(--foreground) / 0.16);
+  }
+  .elevate-3 {
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.50),
+      0 4px 12px hsl(var(--foreground) / 0.08),
+      0 28px 56px -16px hsl(var(--foreground) / 0.26);
+  }
+  .dark .elevate-1 {
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.07),
+      0 1px 2px hsl(0 0% 0% / 0.30),
+      0 4px 16px -4px hsl(0 0% 0% / 0.40);
+  }
+  .dark .elevate-2 {
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.09),
+      0 2px 6px hsl(0 0% 0% / 0.35),
+      0 16px 32px -12px hsl(0 0% 0% / 0.50);
+  }
+  .dark .elevate-3 {
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.11),
+      0 4px 12px hsl(0 0% 0% / 0.40),
+      0 28px 56px -16px hsl(0 0% 0% / 0.60);
+  }
+
+  /* Glass tiers: vertical luminance gradient + heavy blur/saturation */
+  .glass-1 {
+    background: linear-gradient(180deg, hsl(var(--card) / 0.52), hsl(var(--card) / 0.38));
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid hsl(var(--border) / 0.45);
+  }
+  .glass-2 {
+    background: linear-gradient(180deg, hsl(var(--card) / 0.68), hsl(var(--card) / 0.52));
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border: 1px solid hsl(var(--border) / 0.55);
+  }
+  .glass-3 {
+    background: linear-gradient(180deg, hsl(var(--card) / 0.82), hsl(var(--card) / 0.68));
+    backdrop-filter: blur(32px) saturate(1.6);
+    -webkit-backdrop-filter: blur(32px) saturate(1.6);
+    border: 1px solid hsl(var(--border) / 0.65);
+  }
+}
+
+/* Ambient liquid backdrop — oversized soft color blobs that drift slowly,
+   the motion cue that makes the glass read as liquid rather than static. */
+.spatial-field {
+  position: relative;
+  isolation: isolate;
+}
+.spatial-field::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  background:
+    radial-gradient(42% 34% at 14% 4%, hsl(var(--accent) / 0.18), transparent 65%),
+    radial-gradient(38% 30% at 88% 12%, hsl(var(--success) / 0.12), transparent 60%),
+    radial-gradient(50% 40% at 55% 96%, hsl(var(--accent) / 0.10), transparent 65%);
+  pointer-events: none;
+  animation: liquid-drift 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.dark .spatial-field::before {
+  background:
+    radial-gradient(42% 34% at 14% 4%, hsl(var(--accent) / 0.15), transparent 65%),
+    radial-gradient(38% 30% at 88% 12%, hsl(var(--success) / 0.09), transparent 60%),
+    radial-gradient(50% 40% at 55% 96%, hsl(var(--accent) / 0.11), transparent 65%);
+}
+
+@keyframes liquid-drift {
+  from { transform: translate3d(-2%, -1.5%, 0) scale(1) rotate(0.001deg); }
+  50%  { transform: translate3d(1%, 1%, 0) scale(1.06); }
+  to   { transform: translate3d(2.5%, -1%, 0) scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spatial-field::before { animation: none; }
+}
+
+/* Tilt card — perspective host + inner layer transformed via JS (TiltCard) */
+.tilt-host { perspective: 1200px; }
+.tilt-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, box-shadow 0.25s ease-out;
+  will-change: transform;
+}
+.tilt-sheen {
+  background: radial-gradient(circle at var(--sheen-x, 50%) var(--sheen-y, 50%), hsl(0 0% 100% / 0.35), transparent 45%);
+  opacity: var(--sheen-o, 0);
+  transition: opacity 0.2s ease-out;
+  pointer-events: none;
+}
+.dark .tilt-sheen {
+  background: radial-gradient(circle at var(--sheen-x, 50%) var(--sheen-y, 50%), hsl(0 0% 100% / 0.10), transparent 45%);
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float-y 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt-inner { transition: none; }
+  .animate-float { animation: none; }
+}

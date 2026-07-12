@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { TiltCard } from "@/components/spatial/tilt-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const plans = [
   { id: "free", name: "Free", price: "$0", credits: "300 credits/mo",
@@ -22,9 +23,10 @@ export default function PricingPage() {
         Credits map to actual compute — you see the exact cost of every run before it
         starts, and a hard cap protects you by default.
       </p>
-      <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         {plans.map((plan) => (
-          <Card key={plan.id} className={plan.popular ? "border-accent shadow-md" : ""}>
+          <TiltCard key={plan.id} depth={plan.popular ? 3 : 2}
+                    innerClassName={plan.popular ? "ring-1 ring-accent" : ""}>
             <CardHeader>
               {plan.popular && (
                 <span className="mb-1 w-fit rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
@@ -52,7 +54,7 @@ export default function PricingPage() {
                 </Button>
               </Link>
             </CardContent>
-          </Card>
+          </TiltCard>
         ))}
       </div>
       <p className="mt-8 text-center text-sm text-muted-foreground">

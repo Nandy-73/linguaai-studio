@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sidebar } from "@/components/app/sidebar";
-import { Topbar } from "@/components/app/topbar";
+import { RibbonNav } from "@/components/app/ribbon-nav";
 import { getTokens } from "@/lib/api";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -24,12 +23,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (!ready) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar />
-        <main className="studio-scroll flex-1 overflow-y-auto p-6">{children}</main>
-      </div>
+    <div className="spatial-field flex h-screen flex-col overflow-hidden">
+      <RibbonNav />
+      <main className="studio-scroll flex-1 overflow-y-auto p-6">{children}</main>
     </div>
   );
 }

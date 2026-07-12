@@ -10,6 +10,7 @@ import { Badge, statusVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { StageRibbon } from "@/components/stage-ribbon";
+import { TiltCard } from "@/components/spatial/tilt-card";
 import { useWorkspace } from "@/stores/workspace";
 
 export default function DashboardPage() {
@@ -40,26 +41,26 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
+        <TiltCard depth={1}>
           <CardHeader>
             <CardDescription>Projects</CardDescription>
             <CardTitle className="font-mono text-3xl">{projects?.length ?? "—"}</CardTitle>
           </CardHeader>
-        </Card>
-        <Card>
+        </TiltCard>
+        <TiltCard depth={1}>
           <CardHeader>
             <CardDescription>Active runs</CardDescription>
             <CardTitle className="font-mono text-3xl">{active.length}</CardTitle>
           </CardHeader>
-        </Card>
-        <Card>
+        </TiltCard>
+        <TiltCard depth={1}>
           <CardHeader>
             <CardDescription>Credits</CardDescription>
             <CardTitle className="font-mono text-3xl">
               {currentOrg?.credits?.toLocaleString() ?? "—"}
             </CardTitle>
           </CardHeader>
-        </Card>
+        </TiltCard>
       </div>
 
       <Card>

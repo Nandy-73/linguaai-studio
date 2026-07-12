@@ -6,7 +6,7 @@ export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTML
     <input
       ref={ref}
       className={cn(
-        "flex h-9 w-full rounded-lg border bg-card px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50",
+        "flex h-9 w-full rounded-lg border border-border/60 bg-card/50 px-3 py-1 text-sm backdrop-blur-md transition-colors placeholder:text-muted-foreground focus-visible:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50",
         className
       )}
       {...props}
@@ -22,7 +22,7 @@ export const Textarea = forwardRef<
   <textarea
     ref={ref}
     className={cn(
-      "flex min-h-[60px] w-full rounded-lg border bg-card px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50",
+      "flex min-h-[60px] w-full rounded-lg border border-border/60 bg-card/50 px-3 py-2 text-sm backdrop-blur-md placeholder:text-muted-foreground focus-visible:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50",
       className
     )}
     {...props}
@@ -35,7 +35,7 @@ export const Select = forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<H
     <select
       ref={ref}
       className={cn(
-        "flex h-9 w-full rounded-lg border bg-card px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50",
+        "flex h-9 w-full rounded-lg border border-border/60 bg-card/50 px-3 py-1 text-sm backdrop-blur-md focus-visible:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50",
         className
       )}
       {...props}

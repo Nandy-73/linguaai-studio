@@ -13,8 +13,8 @@ const links = [
 
 export function Navbar() {
   return (
-    <header className="glass sticky top-0 z-50">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+    <header className="sticky top-3 z-50 px-3">
+      <div className="glass-3 elevate-3 mx-auto flex h-14 max-w-5xl items-center justify-between rounded-2xl px-4">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-accent-foreground">
             <Languages className="h-4 w-4" />

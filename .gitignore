@@ -33,3 +33,4 @@ postgres-data/
 mongo-data/
 models-cache/
 .tools/
+*.tsbuildinfo

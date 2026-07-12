@@ -7,11 +7,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-accent text-accent-foreground hover:bg-accent/90",
-        secondary: "bg-muted text-foreground hover:bg-muted/70",
-        outline: "border bg-transparent hover:bg-muted",
-        ghost: "hover:bg-muted",
-        destructive: "bg-destructive text-white hover:bg-destructive/90",
+        default:
+          "bg-accent text-accent-foreground hover:bg-accent/90 shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.35),0_4px_12px_-4px_hsl(var(--accent)/0.5)]",
+        secondary:
+          "bg-muted/60 text-foreground backdrop-blur-md hover:bg-muted/80 shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.3)]",
+        outline:
+          "border border-border/60 bg-card/40 backdrop-blur-md hover:bg-card/70 shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.3)]",
+        ghost: "hover:bg-muted/60 hover:backdrop-blur-md",
+        destructive:
+          "bg-destructive text-white hover:bg-destructive/90 shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.25)]",
       },
       size: {
         default: "h-9 px-4",
