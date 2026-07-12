@@ -137,18 +137,20 @@ body {
   inset: -12%;
   z-index: -1;
   background:
-    radial-gradient(42% 34% at 14% 4%, hsl(var(--accent) / 0.18), transparent 65%),
-    radial-gradient(38% 30% at 88% 12%, hsl(var(--success) / 0.12), transparent 60%),
-    radial-gradient(50% 40% at 55% 96%, hsl(var(--accent) / 0.10), transparent 65%);
+    radial-gradient(38% 32% at 12% 6%, hsl(var(--accent) / 0.34), transparent 65%),
+    radial-gradient(34% 28% at 86% 14%, hsl(var(--success) / 0.24), transparent 60%),
+    radial-gradient(30% 26% at 70% 55%, hsl(28 90% 60% / 0.18), transparent 62%),
+    radial-gradient(44% 36% at 30% 92%, hsl(var(--accent) / 0.26), transparent 65%);
   pointer-events: none;
   animation: liquid-drift 28s ease-in-out infinite alternate;
   will-change: transform;
 }
 .dark .spatial-field::before {
   background:
-    radial-gradient(42% 34% at 14% 4%, hsl(var(--accent) / 0.15), transparent 65%),
-    radial-gradient(38% 30% at 88% 12%, hsl(var(--success) / 0.09), transparent 60%),
-    radial-gradient(50% 40% at 55% 96%, hsl(var(--accent) / 0.11), transparent 65%);
+    radial-gradient(38% 32% at 12% 6%, hsl(var(--accent) / 0.22), transparent 65%),
+    radial-gradient(34% 28% at 86% 14%, hsl(var(--success) / 0.14), transparent 60%),
+    radial-gradient(30% 26% at 70% 55%, hsl(28 90% 60% / 0.12), transparent 62%),
+    radial-gradient(44% 36% at 30% 92%, hsl(var(--accent) / 0.16), transparent 65%);
 }
 
 @keyframes liquid-drift {
