@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Mic, MicOff, Radio, Trash2 } from "lucide-react";
+import { AlertTriangle, Mic, MicOff, Radio, Trash2 } from "lucide-react";
 import { api } from "@/lib/api";
 import type { LanguageInfo } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -27,14 +27,25 @@ const SPEECH_LANGS = [
   { code: "es-ES", label: "Spanish" },
 ];
 
+const ERROR_MESSAGES: Record<string, string> = {
+  "not-allowed": "Microphone access was denied. Click the 🔒/ⓘ icon in the address bar, allow the mic for this site, then try again.",
+  "service-not-allowed": "The browser blocked the speech service (often a privacy extension or enterprise policy). Try disabling extensions for this site.",
+  "no-speech": "No speech detected yet — keep talking, or check that the right microphone is selected in your OS sound settings.",
+  "audio-capture": "No microphone was found. Plug one in / enable it and try again.",
+  network: "The browser's speech service couldn't be reached — check your internet connection (some VPNs/ad-blockers block it).",
+  aborted: "Listening was interrupted.",
+};
+
 export default function LiveTranslatePage() {
   const [supported, setSupported] = useState(true);
   const [listening, setListening] = useState(false);
+  const [recognitionActive, setRecognitionActive] = useState(false);
   const [speechLang, setSpeechLang] = useState("en-US");
   const [targetLang, setTargetLang] = useState("ta");
   const [style, setStyle] = useState("auto");
   const [interim, setInterim] = useState("");
   const [lines, setLines] = useState<Line[]>([]);
+  const [statusMessage, setStatusMessage] = useState("");
   const recognitionRef = useRef<ReturnType<typeof createRecognition> | null>(null);
   const idRef = useRef(0);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -84,15 +95,26 @@ export default function LiveTranslatePage() {
     }
   }
 
+  const FATAL_ERRORS = new Set(["not-allowed", "service-not-allowed", "audio-capture"]);
+
   function start() {
     const rec = createRecognition();
-    if (!rec) return;
+    if (!rec) {
+      setSupported(false);
+      return;
+    }
     rec.lang = speechLang;
     rec.continuous = true;
     rec.interimResults = true;
 
+    rec.onstart = () => {
+      setRecognitionActive(true);
+      setStatusMessage("");
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rec.onresult = (event: any) => {
+      setStatusMessage("");
       let interimText = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
@@ -107,21 +129,40 @@ export default function LiveTranslatePage() {
       }
       setInterim(interimText);
     };
-    rec.onend = () => {
-      // Chrome stops after silence — restart while the user wants to listen
-      if (recognitionRef.current) rec.start();
-    };
+
     rec.onerror = (e: { error?: string }) => {
-      if (e.error === "not-allowed") {
-        setSupported(true);
-        stop();
-        alert("Microphone permission denied — allow mic access and try again.");
+      const code = e.error || "unknown";
+      setStatusMessage(ERROR_MESSAGES[code] || `Speech recognition error: ${code}`);
+      if (FATAL_ERRORS.has(code)) {
+        recognitionRef.current = null; // stop the onend auto-restart loop
+        setListening(false);
+        setRecognitionActive(false);
+      }
+      // "no-speech" / "network" / "aborted" are recoverable — onend below restarts us.
+    };
+
+    rec.onend = () => {
+      setRecognitionActive(false);
+      // Chrome stops after ~silence — restart while the user still wants to listen.
+      if (recognitionRef.current === rec) {
+        try {
+          rec.start();
+        } catch {
+          setStatusMessage("Lost connection to the speech engine — click Start listening again.");
+          setListening(false);
+        }
       }
     };
 
     recognitionRef.current = rec;
-    rec.start();
-    setListening(true);
+    setStatusMessage("");
+    try {
+      rec.start();
+      setListening(true);
+    } catch {
+      setStatusMessage("Couldn't start the microphone — click Start listening again.");
+      recognitionRef.current = null;
+    }
   }
 
   function stop() {
@@ -129,7 +170,9 @@ export default function LiveTranslatePage() {
     recognitionRef.current = null; // prevents onend auto-restart
     rec?.stop();
     setListening(false);
+    setRecognitionActive(false);
     setInterim("");
+    setStatusMessage("");
   }
 
   useEffect(() => () => stop(), []); // stop on page leave
@@ -159,10 +202,24 @@ export default function LiveTranslatePage() {
 
       {!supported && (
         <Card>
-          <CardContent className="pt-5 text-sm text-destructive">
+          <CardContent className="flex items-start gap-2 pt-5 text-sm text-destructive">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             Live speech recognition needs Chrome or Edge — this browser doesn&apos;t support it.
           </CardContent>
         </Card>
+      )}
+
+      {statusMessage && (
+        <Card className="border-warning/40">
+          <CardContent className="flex items-start gap-2 pt-5 text-sm text-warning">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            {statusMessage}
+          </CardContent>
+        </Card>
+      )}
+
+      {listening && !recognitionActive && !statusMessage && (
+        <p className="text-center text-xs text-muted-foreground">Connecting to the microphone…</p>
       )}
 
       <Card>
@@ -207,7 +264,7 @@ export default function LiveTranslatePage() {
         <CardHeader className="flex-row items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             Captions
-            {listening && (
+            {recognitionActive && (
               <span className="flex items-center gap-1.5 text-xs font-normal text-accent">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-accent" /> listening…
               </span>
