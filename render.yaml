@@ -57,6 +57,7 @@ services:
     plan: free
     dockerfilePath: docker/worker.Dockerfile
     dockerContext: .
+    healthCheckPath: /
     envVars:
       - key: BACKEND_URL
         sync: false
