@@ -126,6 +126,12 @@ async def me(user: User = Depends(get_current_user)):
     return user
 
 
+@router.get("/oauth-providers")
+async def oauth_providers():
+    """Which OAuth providers are configured — drives the sign-in page buttons."""
+    return {"providers": [name for name, conf in OAUTH_PROVIDERS.items() if conf["client_id"]()]}
+
+
 @router.get("/oauth/{provider}")
 async def oauth_start(provider: str):
     conf = OAUTH_PROVIDERS.get(provider)

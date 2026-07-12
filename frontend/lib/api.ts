@@ -55,11 +55,20 @@ export async function api<T = unknown>(
   if (access) headers.Authorization = `Bearer ${access}`;
   if (json !== undefined) headers["Content-Type"] = "application/json";
 
-  const resp = await fetch(`${API}${path}`, {
-    ...init,
-    headers,
-    body: json !== undefined ? JSON.stringify(json) : init.body,
-  });
+  let resp: Response;
+  try {
+    resp = await fetch(`${API}${path}`, {
+      ...init,
+      headers,
+      body: json !== undefined ? JSON.stringify(json) : init.body,
+    });
+  } catch {
+    throw new ApiError(0, "Cannot reach the LinguaAI backend. Is `docker compose up` running? (Use http://localhost:8080, not the frontend dev port.)");
+  }
+  // Frontend dev server without a backend answers /api/* itself with an HTML 404
+  if (resp.status === 404 && (resp.headers.get("content-type") || "").includes("text/html")) {
+    throw new ApiError(0, "The backend is not running behind this origin. Start the full stack with `docker compose up` and open http://localhost:8080.");
+  }
 
   if (resp.status === 401 && !retried && (await tryRefresh())) {
     return api<T>(path, options, true);
