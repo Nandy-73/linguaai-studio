@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { UploadCloud } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Trash2, UploadCloud } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Asset, Project, Run } from "@/lib/types";
 import { formatBytes, formatDuration, timeAgo } from "@/lib/utils";
@@ -14,6 +14,7 @@ import { StageRibbon } from "@/components/stage-ribbon";
 
 export default function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
+  const qc = useQueryClient();
 
   const { data: project } = useQuery({
     queryKey: ["project", projectId],
@@ -27,6 +28,12 @@ export default function ProjectDetailPage() {
     queryKey: ["runs", projectId],
     queryFn: () => api<Run[]>(`/projects/${projectId}/runs`),
     refetchInterval: 5000,
+  });
+
+  const deleteAsset = useMutation({
+    mutationFn: (assetId: string) =>
+      api(`/projects/${projectId}/assets/${assetId}`, { method: "DELETE" }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["assets", projectId] }),
   });
 
   return (
@@ -57,8 +64,21 @@ export default function ProjectDetailPage() {
               <div className="flex items-center gap-2">
                 <Badge variant={a.status === "ready" ? "success" : "default"}>{a.status}</Badge>
                 <Link href={`/upload?project=${projectId}&asset=${a.id}`}>
-                  <Button size="sm" variant="outline">Localize</Button>
+                  <Button size="sm" variant="outline" disabled={a.status !== "ready"}>
+                    Localize
+                  </Button>
                 </Link>
+                <Button
+                  size="icon" variant="ghost"
+                  disabled={deleteAsset.isPending}
+                  onClick={() => {
+                    if (confirm(`Delete "${a.filename}"? This can't be undone.`)) {
+                      deleteAsset.mutate(a.id);
+                    }
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
               </div>
             </div>
           ))}
