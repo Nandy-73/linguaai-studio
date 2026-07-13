@@ -53,19 +53,33 @@ function unreachableMessage(): string {
     : "Cannot reach the LinguaAI server right now. Free-tier servers sleep after 15 minutes idle and take up to a minute to wake up — please try again in a moment.";
 }
 
+type WakingListener = (attempt: number, maxAttempts: number) => void;
+const wakingListeners = new Set<WakingListener>();
+
+/** Subscribe to cold-start retry progress (e.g. to show a "waking up…" banner). */
+export function onServerWaking(listener: WakingListener): () => void {
+  wakingListeners.add(listener);
+  return () => wakingListeners.delete(listener);
+}
+
+// Render's free tier documents "up to a minute" to wake a sleeping instance.
+// Retry across that whole window rather than giving up after one short wait.
+const WAKEUP_RETRY_DELAYS_MS = [2000, 4000, 6000, 8000, 10000, 12000, 15000];
+
 async function fetchWithWakeupRetry(url: string, init: RequestInit): Promise<Response> {
-  try {
-    return await fetch(url, init);
-  } catch (err) {
-    // A network-level failure (not an HTTP error) often means a sleeping
-    // free-tier instance was mid-wakeup — give it a moment and retry once.
-    await new Promise((r) => setTimeout(r, 4000));
+  const maxAttempts = WAKEUP_RETRY_DELAYS_MS.length + 1;
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return await fetch(url, init);
-    } catch {
-      throw err;
+    } catch (err) {
+      lastErr = err;
+      if (attempt === maxAttempts) break;
+      wakingListeners.forEach((l) => l(attempt, maxAttempts));
+      await new Promise((r) => setTimeout(r, WAKEUP_RETRY_DELAYS_MS[attempt - 1]));
     }
   }
+  throw lastErr;
 }
 
 export async function api<T = unknown>(
