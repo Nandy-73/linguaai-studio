@@ -38,3 +38,53 @@ app.include_router(api_router)
 @app.get("/healthz")
 async def healthz():
     return {"status": "ok", "app": settings.APP_NAME, "env": settings.APP_ENV}
+
+
+@app.get("/healthz/deps")
+async def healthz_deps():
+    """Per-dependency connectivity check — pinpoints which backing service is
+    unreachable (and why) without needing dashboard log access."""
+    from sqlalchemy import text
+    from starlette.concurrency import run_in_threadpool
+
+    from app.core.database import engine
+    from app.core.mongo import get_mongo
+    from app.core.redis import get_redis
+
+    def err(exc: Exception) -> str:
+        return f"{type(exc).__name__}: {exc}"[:400]
+
+    out: dict[str, str] = {}
+
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        out["postgres"] = "ok"
+    except Exception as exc:
+        out["postgres"] = err(exc)
+
+    try:
+        await get_mongo().command("ping")
+        out["mongo"] = "ok"
+    except Exception as exc:
+        out["mongo"] = err(exc)
+
+    try:
+        await get_redis().ping()
+        out["redis"] = "ok"
+    except Exception as exc:
+        out["redis"] = err(exc)
+
+    def check_broker() -> str:
+        from app.celery_client import celery_app
+        try:
+            conn = celery_app.connection()
+            conn.ensure_connection(max_retries=1, timeout=5)
+            conn.release()
+            return "ok"
+        except Exception as exc:
+            return err(exc)
+
+    out["celery_broker"] = await run_in_threadpool(check_broker)
+
+    return out
