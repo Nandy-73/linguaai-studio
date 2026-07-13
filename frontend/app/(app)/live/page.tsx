@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Mic, MicOff, Radio, Trash2 } from "lucide-react";
+import { AlertTriangle, Mic, MicOff, Radio, Send, Trash2 } from "lucide-react";
 import { api } from "@/lib/api";
 import type { LanguageInfo } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Label, Select } from "@/components/ui/input";
+import { Input, Label, Select } from "@/components/ui/input";
 
 interface Line {
   id: number;
@@ -46,6 +46,7 @@ export default function LiveTranslatePage() {
   const [interim, setInterim] = useState("");
   const [lines, setLines] = useState<Line[]>([]);
   const [statusMessage, setStatusMessage] = useState("");
+  const [typed, setTyped] = useState("");
   const recognitionRef = useRef<ReturnType<typeof createRecognition> | null>(null);
   const idRef = useRef(0);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -178,6 +179,16 @@ export default function LiveTranslatePage() {
   useEffect(() => () => stop(), []); // stop on page leave
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
+  function submitTyped(e: React.FormEvent) {
+    e.preventDefault();
+    const text = typed.trim();
+    if (!text) return;
+    const id = ++idRef.current;
+    setLines((prev) => [...prev, { id, source: text, translated: null }]);
+    translateLine(id, text);
+    setTyped("");
+  }
+
   return (
     <div className="mx-auto flex h-full max-w-4xl flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -259,6 +270,18 @@ export default function LiveTranslatePage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Mic-free path: type (or paste) a line and translate it instantly */}
+      <form onSubmit={submitTyped} className="flex gap-2">
+        <Input
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          placeholder="No mic? Type or paste a sentence here and press Translate…"
+        />
+        <Button type="submit" variant="secondary" disabled={!typed.trim()}>
+          <Send className="h-4 w-4" /> Translate
+        </Button>
+      </form>
 
       <Card className="flex-1 overflow-hidden">
         <CardHeader className="flex-row items-center justify-between pb-3">
