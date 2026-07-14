@@ -13,6 +13,13 @@ SPEAKER_CATEGORIES = ["adult_male", "adult_female", "teen_boy", "teen_girl",
 def _audio_path(payload: dict) -> tuple[str, float]:
     """Download source and extract mono 16 kHz wav for speech models."""
     source = common.download(payload["source_key"])
+    info = common.ffprobe(source)
+    if not any(s.get("codec_type") == "audio" for s in info.get("streams", [])):
+        common.cleanup(source)
+        raise RuntimeError(
+            "This video has no audio track — there is nothing to transcribe or dub. "
+            "Please upload a video with sound."
+        )
     wav = source + ".16k.wav"
     common.run_ffmpeg(["-i", source, "-vn", "-ac", "1", "-ar", "16000", wav])
     duration = common.media_duration(wav)

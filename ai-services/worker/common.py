@@ -124,7 +124,12 @@ def cleanup(*paths: str) -> None:
 
 # ── mock-mode detection ───────────────────────────────────────────────────────
 def module_available(name: str) -> bool:
-    return importlib.util.find_spec(name) is not None
+    try:
+        return importlib.util.find_spec(name) is not None
+    except ModuleNotFoundError:
+        # find_spec("pkg.sub") imports the parent package first and raises
+        # (rather than returning None) when even the parent is absent.
+        return False
 
 
 def use_mock(required_module: str) -> bool:
