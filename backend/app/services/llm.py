@@ -1,4 +1,6 @@
-"""LLM provider — OpenAI-compatible endpoint (vLLM/Qwen) with graceful mock mode."""
+"""LLM provider — OpenAI-compatible endpoint (Groq/vLLM) with graceful mock mode."""
+import asyncio
+
 import httpx
 
 from app.core.config import settings
@@ -12,21 +14,33 @@ async def complete(system: str, user: str, max_tokens: int = 1024) -> str:
     if not is_live():
         return _mock_response(user)
     async with httpx.AsyncClient(timeout=120) as client:
-        resp = await client.post(
-            f"{settings.LLM_BASE_URL.rstrip('/')}/chat/completions",
-            headers={"Authorization": f"Bearer {settings.LLM_API_KEY or 'none'}"},
-            json={
-                "model": settings.LLM_MODEL,
-                "messages": [
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user},
-                ],
-                "max_tokens": max_tokens,
-                "temperature": 0.3,
-            },
-        )
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"]
+        for attempt in range(3):
+            resp = await client.post(
+                f"{settings.LLM_BASE_URL.rstrip('/')}/chat/completions",
+                headers={"Authorization": f"Bearer {settings.LLM_API_KEY or 'none'}"},
+                json={
+                    "model": settings.LLM_MODEL,
+                    "messages": [
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": user},
+                    ],
+                    "max_tokens": max_tokens,
+                    "temperature": 0.3,
+                },
+            )
+            # Free-tier rate limit: brief, bounded wait then retry (browser
+            # clients are still waiting on this request, so cap tightly).
+            if resp.status_code == 429 and attempt < 2:
+                retry_after = resp.headers.get("retry-after")
+                try:
+                    wait = min(float(retry_after) if retry_after else 6.0, 12.0)
+                except ValueError:
+                    wait = 6.0
+                await asyncio.sleep(wait)
+                continue
+            resp.raise_for_status()
+            return resp.json()["choices"][0]["message"]["content"]
+        raise RuntimeError("LLM rate limit persisted")
 
 
 def _mock_response(user: str) -> str:
