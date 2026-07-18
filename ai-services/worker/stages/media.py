@@ -85,18 +85,21 @@ def audio_mixing(payload: dict):
     langs = payload["params"].get("target_languages", [])
     mixed_keys, tmp = {}, [source]
     try:
-        # Speech-gated ducking: the transcript tells us exactly when someone
-        # is speaking, so the original audio drops to near-silence under each
-        # dubbed line (no "two languages at once") but music/effects between
-        # lines stay audible.
-        doc = common.mongo().transcripts.find_one({"_id": payload["run_id"]}) or {}
-        spans = [(s["start"], s["end"]) for s in doc.get("segments", [])][:200]
-        if spans:
-            gates = "+".join(f"between(t,{max(0, a - 0.15):.2f},{b + 0.25:.2f})"
-                             for a, b in spans)
-            bed_filter = f"volume=eval=frame:volume='if(gt({gates},0),0.07,0.85)'"
-        else:
-            bed_filter = "volume=0.12"
+        # Default: the original audio is fully replaced by the dub — without a
+        # source-separation model we can't keep music while removing speech,
+        # and leftover original speech under the dub is worse than silence.
+        # Opt back in with params.keep_background_audio=true, which mixes a
+        # speech-gated original bed (near-silent during dubbed lines, audible
+        # music in the gaps).
+        keep_bg = bool(payload["params"].get("keep_background_audio"))
+        bed_filter = "volume=0.12"
+        if keep_bg:
+            doc = common.mongo().transcripts.find_one({"_id": payload["run_id"]}) or {}
+            spans = [(s["start"], s["end"]) for s in doc.get("segments", [])][:200]
+            if spans:
+                gates = "+".join(f"between(t,{max(0, a - 0.15):.2f},{b + 0.25:.2f})"
+                                 for a, b in spans)
+                bed_filter = f"volume=eval=frame:volume='if(gt({gates},0),0.07,0.85)'"
 
         for i, lang in enumerate(langs):
             tts_key = f"artifacts/{payload['org_id']}/{payload['run_id']}/voice_generation/dub.{lang}.wav"
@@ -107,14 +110,21 @@ def audio_mixing(payload: dict):
             tmp.append(tts_path)
             out_path = tts_path.replace(".wav", ".mixed.m4a")
             tmp.append(out_path)
-            common.run_ffmpeg([
-                "-i", source, "-i", tts_path,
-                "-filter_complex",
-                f"[0:a]{bed_filter}[bed];"
-                "[bed][1:a]amix=inputs=2:duration=first:dropout_transition=0,"
-                "loudnorm=I=-16:TP=-1.5[out]",
-                "-map", "[out]", "-c:a", "aac", out_path,
-            ])
+            if keep_bg:
+                common.run_ffmpeg([
+                    "-i", source, "-i", tts_path,
+                    "-filter_complex",
+                    f"[0:a]{bed_filter}[bed];"
+                    "[bed][1:a]amix=inputs=2:duration=first:dropout_transition=0,"
+                    "loudnorm=I=-16:TP=-1.5[out]",
+                    "-map", "[out]", "-c:a", "aac", out_path,
+                ])
+            else:
+                common.run_ffmpeg([
+                    "-i", tts_path,
+                    "-af", "loudnorm=I=-16:TP=-1.5",
+                    "-c:a", "aac", out_path,
+                ])
             key = common.artifact_key(payload, f"mixed.{lang}.m4a")
             common.upload_file(out_path, key, "audio/mp4")
             mixed_keys[lang] = key
