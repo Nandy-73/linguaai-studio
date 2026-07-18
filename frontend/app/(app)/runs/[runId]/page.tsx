@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Captions, Clock, Download, MessageSquare, SlidersHorizontal, XCircle } from "lucide-react";
+import { Captions, Clock, Download, MessageSquare, PlayCircle, SlidersHorizontal, XCircle } from "lucide-react";
 import { api, wsUrl } from "@/lib/api";
 import type { Run } from "@/lib/types";
 import { Badge, statusVariant } from "@/components/ui/badge";
@@ -47,6 +47,15 @@ export default function RunPage() {
 
   const done = run?.status === "succeeded";
   const langs = run?.params.target_languages || [];
+
+  // Playable outputs: final dubbed videos (video pipelines) or mixed audio
+  // tracks (audio pipelines) — keyed by language from the artifact filename.
+  const videoPreviews = (artifacts || []).filter((a) =>
+    a.key.includes("/video_render/final."));
+  const audioPreviews = videoPreviews.length > 0 ? [] :
+    (artifacts || []).filter((a) => a.key.includes("/audio_mixing/mixed."));
+  const previewLang = (key: string) =>
+    key.split("/").pop()?.split(".").slice(-2, -1)[0] || "";
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -95,6 +104,39 @@ export default function RunPage() {
           )}
         </CardContent>
       </Card>
+
+      {done && (videoPreviews.length > 0 || audioPreviews.length > 0) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PlayCircle className="h-4 w-4 text-accent" /> Preview — translated result
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {videoPreviews.map((a) => (
+              <div key={a.key}>
+                <p className="mb-1.5 font-mono text-xs uppercase text-muted-foreground">
+                  {previewLang(a.key)} — dubbed video
+                </p>
+                <video
+                  controls
+                  preload="metadata"
+                  className="w-full rounded-xl border border-border/60 bg-black"
+                  src={a.url}
+                />
+              </div>
+            ))}
+            {audioPreviews.map((a) => (
+              <div key={a.key}>
+                <p className="mb-1.5 font-mono text-xs uppercase text-muted-foreground">
+                  {previewLang(a.key)} — dubbed audio
+                </p>
+                <audio controls className="w-full" src={a.url} />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {done && (
         <Card>
