@@ -17,6 +17,13 @@ AI_MOCK_MODE = os.getenv("AI_MOCK_MODE", "auto")  # auto | always | never
 WHISPER_MODEL = os.getenv("WHISPER_MODEL", "large-v3")
 HF_TOKEN = os.getenv("HF_TOKEN", "")
 
+# Provider selection per capability. "auto" picks the best available:
+# ASR: Groq-hosted Whisper (needs LLM_* creds) -> local WhisperX -> mock
+# TTS: Edge neural voices (free, no key)      -> mock
+ASR_PROVIDER = os.getenv("ASR_PROVIDER", "auto")  # auto | groq | local | mock
+ASR_MODEL = os.getenv("ASR_MODEL", "whisper-large-v3-turbo")
+TTS_PROVIDER = os.getenv("TTS_PROVIDER", "auto")  # auto | edge | mock
+
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 LLM_MODEL = os.getenv("LLM_MODEL", "qwen2.5-14b-instruct")
