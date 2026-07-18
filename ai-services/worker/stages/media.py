@@ -85,6 +85,19 @@ def audio_mixing(payload: dict):
     langs = payload["params"].get("target_languages", [])
     mixed_keys, tmp = {}, [source]
     try:
+        # Speech-gated ducking: the transcript tells us exactly when someone
+        # is speaking, so the original audio drops to near-silence under each
+        # dubbed line (no "two languages at once") but music/effects between
+        # lines stay audible.
+        doc = common.mongo().transcripts.find_one({"_id": payload["run_id"]}) or {}
+        spans = [(s["start"], s["end"]) for s in doc.get("segments", [])][:200]
+        if spans:
+            gates = "+".join(f"between(t,{max(0, a - 0.15):.2f},{b + 0.25:.2f})"
+                             for a, b in spans)
+            bed_filter = f"volume=eval=frame:volume='if(gt({gates},0),0.07,0.85)'"
+        else:
+            bed_filter = "volume=0.12"
+
         for i, lang in enumerate(langs):
             tts_key = f"artifacts/{payload['org_id']}/{payload['run_id']}/voice_generation/dub.{lang}.wav"
             try:
@@ -94,11 +107,11 @@ def audio_mixing(payload: dict):
             tmp.append(tts_path)
             out_path = tts_path.replace(".wav", ".mixed.m4a")
             tmp.append(out_path)
-            # Duck the original bed under the dubbed voice, loudness-normalize.
             common.run_ffmpeg([
                 "-i", source, "-i", tts_path,
                 "-filter_complex",
-                "[0:a]volume=0.25[bed];[bed][1:a]amix=inputs=2:duration=first:dropout_transition=0,"
+                f"[0:a]{bed_filter}[bed];"
+                "[bed][1:a]amix=inputs=2:duration=first:dropout_transition=0,"
                 "loudnorm=I=-16:TP=-1.5[out]",
                 "-map", "[out]", "-c:a", "aac", out_path,
             ])

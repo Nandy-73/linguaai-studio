@@ -121,7 +121,7 @@ export default function RunPage() {
                 <video
                   controls
                   preload="metadata"
-                  className="w-full rounded-xl border border-border/60 bg-black"
+                  className="mx-auto max-h-[65vh] w-auto max-w-full rounded-xl border border-border/60 bg-black"
                   src={a.url}
                 />
               </div>
