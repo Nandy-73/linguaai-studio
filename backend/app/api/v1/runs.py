@@ -41,7 +41,8 @@ async def create_run(body: RunCreate, access=Depends(require_project_role("edito
     org = await db.get(Organization, project.org_id)
     run = await pipelines.create_run(
         db, org, project.id, asset, body.template, body.target_languages, body.styles,
-        {**body.params, "voice_mode": body.voice_mode, "character_voices": body.character_voices},
+        {**body.params, "voice_mode": body.voice_mode, "voice_gender": body.voice_gender,
+         "character_voices": body.character_voices},
     )
     full = (
         await db.execute(

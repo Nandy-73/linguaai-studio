@@ -9,6 +9,7 @@ class RunCreate(BaseModel):
     target_languages: list[str] = Field(min_length=1)
     styles: dict[str, str] = {}          # lang -> style id ("auto" = engine decides)
     voice_mode: str = "auto"             # auto|clone|library
+    voice_gender: str = "auto"           # auto|female|male
     character_voices: dict[str, str] = {}  # character_id -> voice_id
     params: dict = {}
 

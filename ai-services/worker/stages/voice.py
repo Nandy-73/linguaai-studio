@@ -134,6 +134,10 @@ def voice_generation(payload: dict):
     targets = payload["params"].get("target_languages", [])
     total_duration = max(s["end"] for s in segments) + 2.0
     speakers = sorted({s.get("speaker") or "SPEAKER_00" for s in segments})
+    # User voice preference: "female" | "male" | "auto" (VOICE_MAP order is
+    # [female, male]). A fixed preference applies to every speaker; "auto"
+    # cycles so multi-speaker content gets distinct voices.
+    voice_pref = (payload["params"].get("voice_gender") or "auto").lower()
 
     use_edge = (config.TTS_PROVIDER in ("auto", "edge")
                 and config.AI_MOCK_MODE != "always"
@@ -146,10 +150,17 @@ def voice_generation(payload: dict):
     for li, lang in enumerate(targets):
         lang_voices = VOICE_MAP.get(lang) or VOICE_MAP.get(lang.split("-")[0])
         engine = "edge" if (use_edge and lang_voices) else "mock"
-        voice_for = {
-            spk: lang_voices[i % len(lang_voices)] if lang_voices else None
-            for i, spk in enumerate(speakers)
-        }
+
+        def _pick_voice(index: int) -> str | None:
+            if not lang_voices:
+                return None
+            if voice_pref == "female":
+                return lang_voices[0]
+            if voice_pref == "male":
+                return lang_voices[1] if len(lang_voices) > 1 else lang_voices[0]
+            return lang_voices[index % len(lang_voices)]
+
+        voice_for = {spk: _pick_voice(i) for i, spk in enumerate(speakers)}
         if engine == "edge":
             voices_used[lang] = voice_for
 
@@ -211,6 +222,7 @@ def voice_generation(payload: dict):
         "outputs": outputs,
         "engine": "edge" if use_edge else "mock",
         "voices": voices_used,
+        "voice_gender": voice_pref,
         "failed_segments": failed_total,
         "speakers": speakers,
     }

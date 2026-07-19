@@ -36,6 +36,7 @@ function UploadInner() {
   const [template, setTemplate] = useState("video_dubbing");
   const [targets, setTargets] = useState<string[]>([]);
   const [styles, setStyles] = useState<Record<string, string>>({});
+  const [voiceGender, setVoiceGender] = useState("auto");
   const [phase, setPhase] = useState<"idle" | "uploading" | "starting">("idle");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
@@ -98,7 +99,8 @@ function UploadInner() {
       setPhase("starting");
       const run = await api<Run>(`/projects/${projectId}/runs`, {
         method: "POST",
-        json: { asset_id: aid, template, target_languages: targets, styles },
+        json: { asset_id: aid, template, target_languages: targets, styles,
+                voice_gender: voiceGender },
       });
       router.push(`/runs/${run.id}`);
     } catch (err) {
@@ -230,6 +232,19 @@ function UploadInner() {
               </Select>
             </div>
           ))}
+          {template !== "subtitles" && template !== "document" && (
+            <div className="space-y-1.5 border-t pt-4">
+              <Label>Dubbing voice</Label>
+              <Select value={voiceGender} onChange={(e) => setVoiceGender(e.target.value)}>
+                <option value="auto">Auto — match the original speaker where possible</option>
+                <option value="female">Female voice</option>
+                <option value="male">Male voice</option>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Applies to every speaker. Child voices arrive with premium engines.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
